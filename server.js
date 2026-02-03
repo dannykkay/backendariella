@@ -4,10 +4,51 @@ const cors = require('cors');
 const helmet = require('helmet');
 const connectDB = require('./config/database');
 const { verifyEmailConfig } = require('./config/email');
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    const result = await resend.emails.send({
+      from: 'Portfolio <onboarding@resend.dev>',
+      to: process.env.EMAIL_TO,
+      subject: 'Test Email from Render',
+      html: '<p>This is a test email to verify Resend works on Render!</p>',
+    });
+    
+    res.json({ success: true, result });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      details: error 
+    });
+  }
+});
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const contactRoutes = require('./routes/contact');
-
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    const result = await resend.emails.send({
+      from: 'Portfolio <onboarding@resend.dev>',
+      to: process.env.EMAIL_TO,
+      subject: 'Test Email from Render',
+      html: '<p>This is a test email to verify Resend works on Render!</p>',
+    });
+    
+    res.json({ success: true, result });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      details: error 
+    });
+  }
+});
 // Initialize Express app
 const app = express();
 
@@ -144,31 +185,5 @@ process.on('SIGTERM', () => {
     process.exit(0);
   });
 });
-// Add this test endpoint BEFORE your error handlers
-app.get('/api/test-email', async (req, res) => {
-  try {
-    const { Resend } = require('resend');
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    
-    const result = await resend.emails.send({
-      from: 'Portfolio <onboarding@resend.dev>',
-      to: process.env.EMAIL_TO,
-      subject: 'Test Email from Render',
-      html: '<p>This is a test email to verify Resend works on Render!</p>',
-    });
-    
-    res.json({ success: true, result });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message,
-      details: error 
-    });
-  }
-});
-```
-
-**Deploy this, then visit:**
-```
 
 module.exports = app;
