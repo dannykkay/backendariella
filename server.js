@@ -48,7 +48,7 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:5500',
       'http://127.0.0.1:5500',
-      'https://ariellatest.onrender.com'
+      'https://ariellafrontend.onrender.com'
       // Add your production frontend URL here
     ].filter(Boolean);
 
@@ -144,5 +144,31 @@ process.on('SIGTERM', () => {
     process.exit(0);
   });
 });
+// Add this test endpoint BEFORE your error handlers
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    const result = await resend.emails.send({
+      from: 'Portfolio <onboarding@resend.dev>',
+      to: process.env.EMAIL_TO,
+      subject: 'Test Email from Render',
+      html: '<p>This is a test email to verify Resend works on Render!</p>',
+    });
+    
+    res.json({ success: true, result });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      details: error 
+    });
+  }
+});
+```
+
+**Deploy this, then visit:**
+```
 
 module.exports = app;
