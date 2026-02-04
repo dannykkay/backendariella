@@ -1,18 +1,7 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-/**
- * Create email transporter using Gmail
- * Make sure to use an App Password, not your regular Gmail password
- */
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-};
+// Initialize Resend with API key
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Generate HTML email template
@@ -141,17 +130,15 @@ const generateEmailTemplate = (data) => {
 };
 
 /**
- * Send contact form email
+ * Send contact form email using Resend
  * @param {Object} formData - Contact form data
  * @returns {Promise} Send result
  */
 const sendContactEmail = async (formData) => {
-  const transporter = createTransporter();
-  
-  const mailOptions = {
-    from: `"Portfolio Contact Form" <${process.env.EMAIL_USER}>`,
+  const emailData = {
+    from: process.env.RESEND_FROM_EMAIL || 'Portfolio <onboarding@resend.dev>',
     to: process.env.EMAIL_TO,
-    replyTo: formData.email,
+    reply_to: formData.email, // Visitor's email - so you can reply directly
     subject: `New Contact: ${formData.name}${formData.organization ? ` (${formData.organization})` : ''}`,
     html: generateEmailTemplate(formData),
     text: `
@@ -169,21 +156,21 @@ Received: ${new Date().toLocaleString()}
     `.trim(),
   };
 
-  return await transporter.sendMail(mailOptions);
+  return await resend.emails.send(emailData);
 };
 
 /**
- * Verify email configuration
- * Tests the connection without sending an email
+ * Verify Resend configuration
  */
 const verifyEmailConfig = async () => {
   try {
-    const transporter = createTransporter();
-    await transporter.verify();
-    console.log('✅ Email configuration verified');
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not set');
+    }
+    console.log('✅ Resend configuration verified');
     return true;
   } catch (error) {
-    console.error('❌ Email configuration error:', error.message);
+    console.error('❌ Resend configuration error:', error.message);
     return false;
   }
 };

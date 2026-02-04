@@ -10,6 +10,8 @@ const contactRoutes = require('./routes/contact');
 
 // Initialize Express app
 const app = express();
+
+app.set('trust proxy', 1); // Trust first proxy
 app.get('/api/test-email', async (req, res) => {
   try {
     const { Resend } = require('resend');
@@ -149,7 +151,10 @@ const server = app.listen(PORT, () => {
   console.log(`URL: http://localhost:${PORT}`);
   console.log('========================================');
 });
-
+// Set timeout to 2 minutes (120000ms) to handle slow external API calls
+server.timeout = 120000;
+server.keepAliveTimeout = 120000;
+server.headersTimeout = 125000;
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Promise Rejection:', err);

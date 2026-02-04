@@ -188,7 +188,7 @@ Once deployment is complete:
 
 Open your browser and visit:
 ```
-https://portfolio-backend-api.onrender.com/api/health
+https://portariella.onrender.com/api/health
 ```
 
 You should see:
@@ -204,7 +204,7 @@ You should see:
 #### 7.2 Test Contact Endpoint with cURL
 
 ```bash
-curl -X POST https://portfolio-backend-api.onrender.com/api/contact \
+curl -X POST https://portariella.onrender.com/api/contact \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Test User",
